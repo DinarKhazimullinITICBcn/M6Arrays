@@ -10,12 +10,10 @@
 <body>
 	<div id="resultat"></div>
 	<script src="js/script.js"></script>
-	<button onclick="inicialitza()">Inicialitza tot</button>
-	<button onclick="ordena('asc')">Ordena de manera ascendent</button>
-	<button onclick="ordena('desc')">Ordena de manera descendent</button>
-	<button onclick="buscar()">Busca</button>
-	<button onclick="mitjana()">Calcula la mitjana</button>
-	<button onclick="ordenaPersonalitzat()">Ordena de manera ascendent/descendent</button>
-	<button onclick="searchList()">Busca un valor</button>
+	<h2>Selecciona base de dades</h2>
+	<button id="butoPokemon" onclick="carregarButtons('pokemon')">Cargar taula Pokemon</button>
+	<button id="butoMunicipi" onclick="carregarButtons('municipi')">Cargar taula Municipis</button>
+	<div id="buttons"></div>
+	<div id="taula"></div>
 </body>
 </html>
