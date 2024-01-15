@@ -1,44 +1,44 @@
 			
-// POKEMONS
+// array
 
-let dades;
-let arrayPokemons = [];
-let arrayMunicipis = [];
-let arrayMeteorits = [];
-let arrayMovies = [];
-
+let array = [];
+let arrayCarregat = [];
 // POKEMONS
-fetch("js/data/pokemon.json")
-.then((response) => response.json())
-.then((data) => {
-    arrayPokemons = data.pokemon.map(pokemon => ({
-        num: pokemon.num,
-        img: pokemon.img,
-        name: pokemon.name,
-        weight: pokemon.weight
-    }));
-});
+function guardarInformacio(name) {
+    fetch(`js/data/${name}.json`)
+    .then((response) => response.json())
+    .then((data) => {
+        if (name === "pokemon") {
+            array = data.pokemon.map(pokemon => ({
+                num: pokemon.num,
+                img: pokemon.img,
+                name: pokemon.name,
+                weight: pokemon.weight
+            }));
+        }
+    });
+}
 
 // MUNICIPIS
-fetch("js/data/municipis.json")
-.then((response) => response.json())
-.then((data) => {
-    arrayMunicipis.push(data);
-});
+//fetch("js/data/municipis.json")
+//.then((response) => response.json())
+//.then((data) => {
+//    arrayMunicipis.push(data);
+//});
 
 // METEORITS
-fetch("js/data/earthMeteorites.json")
-.then((response) => response.json())
-.then((data) => {
-    arrayMeteorits.push(data);
-});
+//fetch("js/data/earthMeteorites.json")
+//.then((response) => response.json())
+//.then((data) => {
+//    arrayMeteorits.push(data);
+//});
 
 // MOVIES
-fetch("js/data/movies.json")
-.then((response) => response.json())
-.then((data) => {
-    arrayMovies.push(data);
-});
+//fetch("js/data/movies.json")
+//.then((response) => response.json())
+//.then((data) => {
+//    arrayMovies.push(data);
+//});
 
 // Carregar buttons
 function carregarButtons(nom) {
@@ -60,45 +60,51 @@ function carregarButtons(nom) {
     div.innerHTML += calcularMitjana;
 }
 // Funcio taula de pokemons:
-function crearTaula(arrayPokemons) {
+function crearTaula(array, name) {
     let taula = document.getElementById('taula');
-    let informacio = "<thead><tr><th>Pokedex</th><th>Imatge</th><th>Nom</th><th>Pes</th></tr></thead>"
-    for (let i = 0; i < arrayPokemons.length; i++){
-        informacio += `<tr><td><p>${arrayPokemons[i].num}</p></td><td><img src="${arrayPokemons[i].img}" alt="${arrayPokemons[i].name}"></td><td><p>${arrayPokemons[i].name}</p></td><td><p>${arrayPokemons[i].weight}</p></td></tr>`;
+    if (name === "pokemon"){
+        let informacio = "<thead><tr><th>Pokedex</th><th>Imatge</th><th>Nom</th><th>Pes</th></tr></thead>"
+        for (let i = 0; i < array.length; i++){
+            informacio += `<tr><td><p>${array[i].num}</p></td><td><img src="${array[i].img}" alt="${array[i].name}"></td><td><p>${array[i].name}</p></td><td><p>${array[i].weight}</p></td></tr>`;
+        }
     }
     taula.innerHTML = informacio;
 }
 // Ordenar de manera ascenden
 function ordenarAsc(nom) {
     if (nom === "pokemon") {
-        arrayPokemons.sort((a, b) => a.id - b.id);
-        crearTaula(arrayPokemons);
+        array.sort((a, b) => a.id - b.id);
+        arrayCarregat = array;
+        crearTaula(array, nom);
     }
 }
 // Ordenar de manera descendent
 function ordenarDesc(nom) {
     if (nom === "pokemon") {
-        arrayPokemons.sort((a, b) => b.id - a.id);
-        crearTaula(arrayPokemons);
+        array.sort((a, b) => b.id - a.id);
+        arrayCarregat = array;
+        crearTaula(array, nom);
     }
 }
 // Buscar per nom
 function buscar(nom) {
     if (nom === "pokemon") {
         let nomABuscar = prompt("Escriu el nom d'un pokemon");
-        let arrayBusqueda = arrayPokemons.filter(pokemon => pokemon.name.toLowerCase().includes(nomABuscar.toLowerCase()));
-        crearTaula(arrayBusqueda);
+        let arrayBusqueda = array.filter(pokemon => pokemon.name.toLowerCase().includes(nomABuscar.toLowerCase()));
+        crearTaula(arrayBusqueda, nom);
     }
 }
 // Calcula mitjana 
-function calcularMitjana() {
+function calcularMitjana(name) {
     let divMitjana = document.getElementById('mitjana');
-    let pesTotal = arrayPokemons.reduce((total, pokemon) => {
-        let pes = Number(pokemon.weight.replace(' kg', ''));
-        return total + pes;
-    }, 0);
-    let mitjana = Math.floor(pesTotal/arrayPokemons.length);
-    divMitjana.innerHTML = mitjana;
+    if (name === "pokemon") {
+        let pesTotal = array.reduce((total, pokemon) => {
+            let pes = Number(pokemon.weight.replace(' kg', ''));
+            return total + pes;
+        }, 0);
+        let mitjana = Math.floor(pesTotal/arrayPokemons.length);
+        divMitjana.innerHTML = mitjana;
+    }
 }
 //Butons
 function recarrega() {
