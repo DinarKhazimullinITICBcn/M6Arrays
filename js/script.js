@@ -54,29 +54,6 @@ function guardarInformacio(name) {
         
     });
 }
-
-
-// MUNICIPIS
-//fetch("js/data/municipis.json")
-//.then((response) => response.json())
-//.then((data) => {
-//    arrayMunicipis.push(data);
-//});
-
-// METEORITS
-//fetch("js/data/earthMeteorites.json")
-//.then((response) => response.json())
-//.then((data) => {
-//    arrayMeteorits.push(data);
-//});
-
-// MOVIES
-//fetch("js/data/movies.json")
-//.then((response) => response.json())
-//.then((data) => {
-//    arrayMovies.push(data);
-//});
-
 // Carregar buttons
 function carregarButtons(nom) {
     let div = document.getElementById('buttons');
