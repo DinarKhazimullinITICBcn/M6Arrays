@@ -2,6 +2,7 @@
 // array
 let array = [];
 let arrayCarregat = [];
+let medida = "";
 // POKEMONS
 function guardarInformacio(name) {
     fetch(`js/data/${name}.json`)
@@ -14,15 +15,43 @@ function guardarInformacio(name) {
                 pokemon.img,
                 parseFloat(pokemon.weight)
             ]));
+            medida = 'kg';
         }
         if (name === "municipis") {
             array = Object.values(data.elements).map(municipi => ([
-                municipi.cif,
-                municipi.nom,
+                municipi.ine,
+                municipi.municipi_nom,
                 municipi.municipi_vista,
                 parseFloat(municipi.nombre_habitants)
             ]));
+            medida = 'habitants'
         }
+        if (name === "movies") {
+            array = data.movies.map(movie => ([
+                movie.year,
+                movie.title,
+                movie.url,
+                parseFloat(movie.rating)
+            ]));
+            medida = 'ratings';
+        }
+        if (name === "earthMeteorites") {
+            array = data.map(meteorite => {
+                let mass = meteorite.mass ? parseFloat(meteorite.mass) : 0;
+                if (isNaN(mass)) {
+                    mass = 0;
+                }
+                return [
+                    meteorite.name,
+                    meteorite.id,
+                    new Date(meteorite.year),
+                    mass
+                ];
+            });
+            medida = 'kg';
+        }
+        
+        
     });
 }
 
@@ -79,10 +108,14 @@ function crearTaula(array, nom) {
     let informacio = "<thead><tr><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>"
     if (nom === 'pokemon') {
         informacio = "<thead><tr><th>Pokedex</th><th>Imatge</th><th>Nom</th><th>Pes</th></tr></thead>"
-    } 
+    }
     for (let i = 0; i < array.length; i++){
-        informacio += `<tr><td><p>${array[i][0]}</p></td><td><img src="${array[i][2]}" alt="${array[i][1]}"></td><td><p>${array[i][1]}</p></td><td><p>${array[i][3]}</p></td></tr>`;
-    }        
+        if (nom !== 'earthMeteorites') {
+            informacio += `<tr><td><p>${array[i][0]}</p></td><td><img src="${array[i][2]}" alt="${array[i][1]}"></td><td><p>${array[i][1]}</p></td><td><p>${array[i][3]}</p></td></tr>`;
+        } else {
+            informacio += `<tr><td><p>${array[i][0]}</p></td><td><p>${array[i][2]}</p></td><td><p>${array[i][1]}</p></td><td><p>${array[i][3]}</p></td></tr>`;
+        }
+    }       
     taula.innerHTML = informacio;  
 }
 // Ordenar de manera ascenden
@@ -113,7 +146,7 @@ function calcularMitjana() {
             let pes = objecte[3];
             return total + pes;
         }, 0);
-        let mitjana = Math.floor(pesTotal/arrayCarregat.length) + ' Kg';
+        let mitjana = Math.floor(pesTotal/arrayCarregat.length) + ' ' + medida;
         divMitjana.innerHTML = mitjana;
     } else {
         alert('No es pot calcular la mitjana d\'una llista buida. Siusplay, intenteu ordenar o buscar la informacio abans d\'intentar-ho');
@@ -125,7 +158,7 @@ function orderList(nom) {
     let loop = true;
     let parametre = '';
     while (loop) {
-        let parametre = prompt('Vols ordenar la llista de manera ascendent o descendent?\n1. Asc\n2. Desc\n3. Sortir');
+        parametre = prompt('Vols ordenar la llista de manera ascendent o descendent?\n1. Asc\n2. Desc\n3. Sortir');
         parametre = parametre.toLowerCase();
         if (parametre === 'asc' || parametre === 'desc' || parametre === 'sortir') {
             loop = false;
@@ -135,7 +168,7 @@ function orderList(nom) {
     }
     if (parametre === 'asc') {
         ordenarAsc(nom);
-    } else {
+    } else if (parametre === 'desc') {
         ordenarDesc(nom);
     }
 }
