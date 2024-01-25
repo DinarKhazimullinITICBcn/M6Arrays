@@ -42,16 +42,15 @@ function guardarInformacio(name) {
                     mass = 0;
                 }
                 return [
-                    meteorite.name,
                     meteorite.id,
+                    meteorite.name,
                     new Date(meteorite.year),
                     mass
                 ];
             });
             medida = 'kg';
-        }
-        
-        
+        } 
+        printList(array, name);
     });
 }
 // Carregar buttons
@@ -80,11 +79,49 @@ function carregarButtons(nom) {
     div.innerHTML += searchList;
 }
 // Funcio taula de pokemons:
-function crearTaula(array, nom) {
+function printList(array, nom) {
     let taula = document.getElementById('taula');
-    let informacio = "<thead><tr><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>"
+    let informacio = 
+    `<thead>
+        <tr>
+            <th>
+                <div id='formatTaula'>
+                    Id
+                    <div id='buttonsTaula'>
+                        <button onclick="ordenarAsc('${nom}', 0)"></button>
+                        <button onclick="ordenarDesc('${nom}', 0)"></button>
+                    </div>
+                </div>
+            </th>
+            <th>
+                Data
+            </th>
+            <th>
+                <div id='formatTaula'>
+                    Nom
+                    <div id='buttonsTaula'>
+                        <button onclick="ordenarAsc('${nom}', 2)"></button>
+                        <button onclick="ordenarDesc('${nom}', 2)"></button>
+                    </div>
+                </div>
+            </th>
+            <th>
+                <div id='formatTaula'>
+                    Massa
+                    <div id='buttonsTaula'>
+                        <button onclick="ordenarAsc('${nom}', 3)"></button>
+                        <button onclick="ordenarDesc('${nom}', 3)"></button>
+                    </div>
+                </div>
+            </th>
+        </tr>
+    </thead>`
     if (nom === 'pokemon') {
         informacio = "<thead><tr><th>Pokedex</th><th>Imatge</th><th>Nom</th><th>Pes</th></tr></thead>"
+    } else if (nom === 'municipis') {
+        informacio = "<thead><tr><th>Ine</th><th>Imatge</th><th>Nom</th><th>Habitants</th></tr></thead>"
+    } else if (nom === 'movies') {
+        informacio = "<thead><tr><th>Any</th><th>Imatge</th><th>Nom</th><th>Rating</th></tr></thead>"
     }
     for (let i = 0; i < array.length; i++){
         if (nom !== 'earthMeteorites') {
@@ -96,23 +133,35 @@ function crearTaula(array, nom) {
     taula.innerHTML = informacio;  
 }
 // Ordenar de manera ascenden
-function ordenarAsc(nom) {
-    array.sort((a, b) => a[0] - b[0]);
+function ordenarAsc(nom, num) {
+    if (num !== 2) {
+        array.sort((a, b) => a[num] - b[num]);
+    } else {
+        array.sort((a, b) => {
+            let firstCharA = String(a[num])[0];
+            let firstCharB = String(b[num])[0];
+            return firstCharA.localeCompare(firstCharB);
+        });
+    }
     arrayCarregat = array;
-    crearTaula(array, nom);
+    printList(array, nom);
 }
 // Ordenar de manera descendent
-function ordenarDesc(nom) {
-    array.sort((a, b) => b[0] - a[0]);
+function ordenarDesc(nom, num) {
+    if (num !== 2) {
+        array.sort((a, b) => b[num] - a[num]);
+    } else {
+        array.sort((a, b) => String(b[num]).localeCompare(String(a[num])));
+    }
     arrayCarregat = array;
-    crearTaula(array, nom);
+    printList(array, nom);
 }
 // Buscar per nom
 function buscar(nom) {
     let nomABuscar = prompt("Escriu el nom d'un " + nom);
     let arrayBusqueda = array.filter(objecte => objecte[1].toLowerCase().includes(nomABuscar.toLowerCase()));
     arrayCarregat = arrayBusqueda;
-    crearTaula(arrayBusqueda, nom);
+    printList(arrayBusqueda, nom);
 }
 
 // Calcula mitjana 
@@ -159,6 +208,15 @@ function searchList(nom) {
     } else {
         alert('El ' + nom + ' no es troba a la llista.');
     }  
+}
+//calcMitjana
+function calcMitjana() {
+    let sum = 0;
+    for (let i = 0; i < array.length; i++) {
+        sum += array[i];
+    }
+    let mitjana = sum / arrayCarregat.length;
+    alert("La mitjana és " + mitjana.toFixed(2) + ".");
 }
 //Butons
 function recarrega() {
