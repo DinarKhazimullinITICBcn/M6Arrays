@@ -1,0 +1,25 @@
+thead {
+    height: 40px;
+    font-size: 24px;
+}
+th {
+    width: 12vw;
+}
+th button {
+    height: 15px;
+    width: 15px;
+}
+td {
+    font-size: 18px;
+    text-align: center;
+}
+#formatTaula {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#buttonsTaula {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+}

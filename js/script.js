@@ -3,16 +3,18 @@
 let array = [];
 let arrayCarregat = [];
 let medida = "";
+let nom = ""
 // POKEMONS
 function guardarInformacio(name) {
+    nom = name;
     fetch(`js/data/${name}.json`)
     .then((response) => response.json())
     .then((data) => {
         if (name === "pokemon") {
             array = data.pokemon.map(pokemon => ([
                 pokemon.num,
-                pokemon.name,
                 pokemon.img,
+                pokemon.name,
                 parseFloat(pokemon.weight)
             ]));
             medida = 'kg';
@@ -20,8 +22,8 @@ function guardarInformacio(name) {
         if (name === "municipis") {
             array = Object.values(data.elements).map(municipi => ([
                 municipi.ine,
-                municipi.municipi_nom,
                 municipi.municipi_vista,
+                municipi.municipi_nom,
                 parseFloat(municipi.nombre_habitants)
             ]));
             medida = 'habitants'
@@ -29,8 +31,8 @@ function guardarInformacio(name) {
         if (name === "movies") {
             array = data.movies.map(movie => ([
                 movie.year,
-                movie.title,
                 movie.url,
+                movie.title,
                 parseFloat(movie.rating)
             ]));
             medida = 'ratings';
@@ -43,14 +45,15 @@ function guardarInformacio(name) {
                 }
                 return [
                     meteorite.id,
-                    meteorite.name,
                     new Date(meteorite.year),
+                    meteorite.name,
                     mass
                 ];
             });
             medida = 'kg';
-        } 
-        printList(array, name);
+        }
+        arrayCarregat = array; 
+        printList(array);
     });
 }
 // Carregar buttons
@@ -60,26 +63,30 @@ function carregarButtons(nom) {
     let inicialitza = `<button onclick="recarrega()">Recarrega</button>`
     div.innerHTML = inicialitza;
 
-    let ordenaAsc = `<button onclick="ordenarAsc('${nom}')">Ordena de manera ascendent</button>`
+    let ordenaAsc = `<button onclick="ordenarAsc(0)">Ordena de manera ascendent</button>`
     div.innerHTML += ordenaAsc;
 
-    let ordenaDesc = `<button onclick="ordenarDesc('${nom}')">Ordena de manera descendent</button>`
+    let ordenaDesc = `<button onclick="ordenarDesc(0)">Ordena de manera descendent</button>`
     div.innerHTML += ordenaDesc;
 
-    let buscar = `<button onclick="buscar('${nom}')">Buscar per nom</button>`
+    let buscar = `<input type="text" id="busca" placeholder="Escriu el nom d'un ${nom}">    `
     div.innerHTML += buscar;
+    setTimeout(function() {
+        document.getElementById('busca').addEventListener('input', buscarElement);
+    }, 0);
 
     let calcularMitjana = `<button onclick="calcularMitjana()">Calcula mitjana del ultim bloc afegit</button>`
     div.innerHTML += calcularMitjana;
     
-    let orderList = `<button onclick="orderList('${nom}')">Ordena de maner ascendent o descendent</button>`
+    let orderList = `<button onclick="orderList()">Ordena de maner ascendent o descendent</button>`
     div.innerHTML += orderList;
 
-    let searchList = `<button onclick="searchList('${nom}')">Busca la posicio del ${nom}</button>`
+    let searchList = `<button onclick="searchList()">Busca la posicio del ${nom}</button>`
     div.innerHTML += searchList;
 }
 // Funcio taula de pokemons:
-function printList(array, nom) {
+function printList(array) {
+    calcularMitjana();
     let taula = document.getElementById('taula');
     let informacio = 
     `<thead>
@@ -88,8 +95,8 @@ function printList(array, nom) {
                 <div id='formatTaula'>
                     Id
                     <div id='buttonsTaula'>
-                        <button onclick="ordenarAsc('${nom}', 0)"></button>
-                        <button onclick="ordenarDesc('${nom}', 0)"></button>
+                        <button onclick="ordenarAsc(0)"></button>
+                        <button onclick="ordenarDesc(0)"></button>
                     </div>
                 </div>
             </th>
@@ -100,8 +107,8 @@ function printList(array, nom) {
                 <div id='formatTaula'>
                     Nom
                     <div id='buttonsTaula'>
-                        <button onclick="ordenarAsc('${nom}', 2)"></button>
-                        <button onclick="ordenarDesc('${nom}', 2)"></button>
+                        <button onclick="ordenarAsc( 2)"></button>
+                        <button onclick="ordenarDesc( 2)"></button>
                     </div>
                 </div>
             </th>
@@ -109,59 +116,156 @@ function printList(array, nom) {
                 <div id='formatTaula'>
                     Massa
                     <div id='buttonsTaula'>
-                        <button onclick="ordenarAsc('${nom}', 3)"></button>
-                        <button onclick="ordenarDesc('${nom}', 3)"></button>
+                        <button onclick="ordenarAsc( 3)"></button>
+                        <button onclick="ordenarDesc( 3)"></button>
                     </div>
                 </div>
             </th>
         </tr>
     </thead>`
     if (nom === 'pokemon') {
-        informacio = "<thead><tr><th>Pokedex</th><th>Imatge</th><th>Nom</th><th>Pes</th></tr></thead>"
+        informacio = `<thead>
+        <tr>
+            <th>
+                <div id='formatTaula'>
+                    Pokedex
+                    <div id='buttonsTaula'>
+                        <button onclick="ordenarAsc( 0)"></button>
+                        <button onclick="ordenarDesc( 0)"></button>
+                    </div>
+                </div>
+            </th>
+            <th>
+                Imatge
+            </th>
+            <th>
+                <div id='formatTaula'>
+                    Nom
+                    <div id='buttonsTaula'>
+                        <button onclick="ordenarAsc( 2)"></button>
+                        <button onclick="ordenarDesc( 2)"></button>
+                    </div>
+                </div>
+            </th>
+            <th>
+                <div id='formatTaula'>
+                    Pes
+                    <div id='buttonsTaula'>
+                        <button onclick="ordenarAsc( 3)"></button>
+                        <button onclick="ordenarDesc( 3)"></button>
+                    </div>
+                </div>
+            </th>
+        </tr>
+    </thead>`;
     } else if (nom === 'municipis') {
-        informacio = "<thead><tr><th>Ine</th><th>Imatge</th><th>Nom</th><th>Habitants</th></tr></thead>"
+        informacio = `<thead>
+        <tr>
+            <th>
+                <div id='formatTaula'>
+                    Ine
+                    <div id='buttonsTaula'>
+                        <button onclick="ordenarAsc( 0)"></button>
+                        <button onclick="ordenarDesc( 0)"></button>
+                    </div>
+                </div>
+            </th>
+            <th>
+                Imatge
+            </th>
+            <th>
+                <div id='formatTaula'>
+                    Nom
+                    <div id='buttonsTaula'>
+                        <button onclick="ordenarAsc( 2)"></button>
+                        <button onclick="ordenarDesc( 2)"></button>
+                    </div>
+                </div>
+            </th>
+            <th>
+                <div id='formatTaula'>
+                    Habitants
+                    <div id='buttonsTaula'>
+                        <button onclick="ordenarAsc( 3)"></button>
+                        <button onclick="ordenarDesc( 3)"></button>
+                    </div>
+                </div>
+            </th>
+        </tr>
+    </thead>`;
     } else if (nom === 'movies') {
-        informacio = "<thead><tr><th>Any</th><th>Imatge</th><th>Nom</th><th>Rating</th></tr></thead>"
+        informacio = `<thead>
+        <tr>
+            <th>
+                <div id='formatTaula'>
+                    Any
+                    <div id='buttonsTaula'>
+                        <button onclick="ordenarAsc( 0)"></button>
+                        <button onclick="ordenarDesc( 0)"></button>
+                    </div>
+                </div>
+            </th>
+            <th>
+                Imatge
+            </th>
+            <th>
+                <div id='formatTaula'>
+                    Nom
+                    <div id='buttonsTaula'>
+                        <button onclick="ordenarAsc( 2)"></button>
+                        <button onclick="ordenarDesc( 2)"></button>
+                    </div>
+                </div>
+            </th>
+            <th>
+                <div id='formatTaula'>
+                    Rating
+                    <div id='buttonsTaula'>
+                        <button onclick="ordenarAsc( 3)"></button>
+                        <button onclick="ordenarDesc( 3)"></button>
+                    </div>
+                </div>
+            </th>
+        </tr>
+    </thead>`;
     }
     for (let i = 0; i < array.length; i++){
         if (nom !== 'earthMeteorites') {
-            informacio += `<tr><td><p>${array[i][0]}</p></td><td><img src="${array[i][2]}" alt="${array[i][1]}"></td><td><p>${array[i][1]}</p></td><td><p>${array[i][3]}</p></td></tr>`;
+            informacio += `<tr><td><p>${array[i][0]}</p></td><td><img src="${array[i][1]}" alt="${array[i][2]}"></td><td><p>${array[i][2]}</p></td><td><p>${array[i][3]}</p></td></tr>`;
         } else {
-            informacio += `<tr><td><p>${array[i][0]}</p></td><td><p>${array[i][2]}</p></td><td><p>${array[i][1]}</p></td><td><p>${array[i][3]}</p></td></tr>`;
+            informacio += `<tr><td><p>${array[i][0]}</p></td><td><p>${array[i][1]}</p></td><td><p>${array[i][2]}</p></td><td><p>${array[i][3]}</p></td></tr>`;
         }
     }       
     taula.innerHTML = informacio;  
 }
 // Ordenar de manera ascenden
-function ordenarAsc(nom, num) {
+function ordenarAsc(num) {
     if (num !== 2) {
-        array.sort((a, b) => a[num] - b[num]);
+        arrayCarregat.sort((a, b) => a[num] - b[num]);
     } else {
-        array.sort((a, b) => {
-            let firstCharA = String(a[num])[0];
-            let firstCharB = String(b[num])[0];
-            return firstCharA.localeCompare(firstCharB);
-        });
+        arrayCarregat.sort((a, b) => a[num].localeCompare(b[num]));
     }
-    arrayCarregat = array;
-    printList(array, nom);
+    printList(arrayCarregat);
 }
-// Ordenar de manera descendent
-function ordenarDesc(nom, num) {
+
+function ordenarDesc(num) {
     if (num !== 2) {
-        array.sort((a, b) => b[num] - a[num]);
+        arrayCarregat.sort((a, b) => b[num] - a[num]);
     } else {
-        array.sort((a, b) => String(b[num]).localeCompare(String(a[num])));
+        arrayCarregat.sort((a, b) => b[num].localeCompare(a[num]));
     }
-    arrayCarregat = array;
-    printList(array, nom);
+    printList(arrayCarregat);
 }
+
 // Buscar per nom
-function buscar(nom) {
-    let nomABuscar = prompt("Escriu el nom d'un " + nom);
-    let arrayBusqueda = array.filter(objecte => objecte[1].toLowerCase().includes(nomABuscar.toLowerCase()));
-    arrayCarregat = arrayBusqueda;
-    printList(arrayBusqueda, nom);
+function buscarElement(input) {
+    let nomABuscar = input.target.value;
+    if (nomABuscar !== "") {
+        arrayCarregat = array.filter(objecte => objecte[2].toLowerCase().includes(nomABuscar.toLowerCase()));
+    } else {
+        arrayCarregat = array;
+    }
+    printList(arrayCarregat);
 }
 
 // Calcula mitjana 
@@ -172,7 +276,7 @@ function calcularMitjana() {
             let pes = objecte[3];
             return total + pes;
         }, 0);
-        let mitjana = Math.floor(pesTotal/arrayCarregat.length) + ' ' + medida;
+        let mitjana = (pesTotal/arrayCarregat.length).toFixed(2) + ' ' + medida;
         divMitjana.innerHTML = mitjana;
     } else {
         alert('No es pot calcular la mitjana d\'una llista buida. Siusplay, intenteu ordenar o buscar la informacio abans d\'intentar-ho');
@@ -180,7 +284,7 @@ function calcularMitjana() {
 }
 
 //Ordenar per parametre afegit del usuari:
-function orderList(nom) {
+function orderList() {
     let loop = true;
     let parametre = '';
     while (loop) {
@@ -193,30 +297,21 @@ function orderList(nom) {
         }
     }
     if (parametre === 'asc') {
-        ordenarAsc(nom);
+        ordenarAsc(0);
     } else if (parametre === 'desc') {
-        ordenarDesc(nom);
+        ordenarDesc(0);
     }
 }
 //Buscar un element en la llista
-function searchList(nom) {
+function searchList() {
     let buscar = prompt('Insereix el nom del objecte del qual vols sapiguer la posicio');
-    let objecte = array.find(objecte => objecte[1].toLowerCase() === buscar.toLowerCase());
+    let objecte = arrayCarregat.find(objecte => objecte[2].toLowerCase() === buscar.toLowerCase());
     if (objecte) {
-        let posicio = array.indexOf(objecte);
+        let posicio = arrayCarregat.indexOf(objecte);
         alert('El ' + nom + ' es troba a la posició ' + posicio + ' de la llista.');
     } else {
         alert('El ' + nom + ' no es troba a la llista.');
     }  
-}
-//calcMitjana
-function calcMitjana() {
-    let sum = 0;
-    for (let i = 0; i < array.length; i++) {
-        sum += array[i];
-    }
-    let mitjana = sum / arrayCarregat.length;
-    alert("La mitjana és " + mitjana.toFixed(2) + ".");
 }
 //Butons
 function recarrega() {
