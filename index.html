@@ -7,10 +7,11 @@
 	<title>Document</title>
 	<link rel="shortcut icon" href="#">
 	<link rel="stylesheet" href="dadesMassives.css">
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script src="js/script.js"></script>
 </head>
 <body>
 	<div id="resultat"></div>
-	<script src="js/script.js"></script>
 	<h2>Selecciona base de dades</h2>
 	<button id="butoPokemon" onclick="carregarButtons('pokemon');guardarInformacio('pokemon')">Cargar taula Pokemon</button>
 	<button id="butoMunicipis" onclick="carregarButtons('municipis');guardarInformacio('municipis')">Cargar taula Municipis</button>
@@ -23,8 +24,11 @@
 				
 			</table>
 		</div>
-		<div id="mitjana" style="padding: 0em 5em 5em 5em; font-size: 50px; margin: 0 0 0 0;">
+		<div id="mitjana">
 			
+		</div>
+		<div class="chart-container" style="position: relative; width:700px">
+			<canvas id="myChart"></canvas>
 		</div>
 	</div>
 	

@@ -1,7 +1,9 @@
-			
 // array
 let array = [];
 let arrayCarregat = [];
+let arrayLables = [];
+let arrayDadesGraf = [];
+let chart;
 let medida = "";
 let nom = ""
 // POKEMONS
@@ -11,6 +13,17 @@ function guardarInformacio(name) {
     .then((response) => response.json())
     .then((data) => {
         if (name === "pokemon") {
+            data.pokemon.forEach(pokemon => {
+                pokemon.type.forEach(type => {
+                    let index = arrayLables.indexOf(type);
+                    if (index === -1) {
+                        arrayLables.push(type);
+                        arrayDadesGraf.push(1);
+                    } else {
+                        arrayDadesGraf[index]++;
+                    }
+                });
+            });
             array = data.pokemon.map(pokemon => ([
                 pokemon.num,
                 pokemon.img,
@@ -29,12 +42,21 @@ function guardarInformacio(name) {
             medida = 'habitants'
         }
         if (name === "movies") {
-            array = data.movies.map(movie => ([
-                movie.year,
-                movie.url,
-                movie.title,
-                parseFloat(movie.rating)
-            ]));
+            array = data.movies.map(movie => {
+                let index = movieGenres.indexOf(movie.genre);
+                if (index === -1) {
+                    movieGenres.push(movie.genre);
+                    movieCounts.push(1);
+                } else {
+                    movieCounts[index]++;
+                }
+                return [
+                    movie.year,
+                    movie.url,
+                    movie.title,
+                    parseFloat(movie.rating)
+                ];
+            });
             medida = 'ratings';
         }
         if (name === "earthMeteorites") {
@@ -54,10 +76,17 @@ function guardarInformacio(name) {
         }
         arrayCarregat = array; 
         printList(array);
+        console.log(arrayLables)
+        console.log(arrayDadesGraf)
     });
 }
 // Carregar buttons
 function carregarButtons(nom) {
+    if (chart) {
+        console.log("entra a chart")
+        chart.destroy();
+        chart = null;
+    }
     let div = document.getElementById('buttons');
 
     let inicialitza = `<button onclick="recarrega()">Recarrega</button>`
@@ -83,6 +112,9 @@ function carregarButtons(nom) {
 
     let searchList = `<button onclick="searchList()">Busca la posicio del ${nom}</button>`
     div.innerHTML += searchList;
+
+    let mostrarGrafic = `<button onclick="mostrarGrafic()">Mostrar grafic de ${nom}</button>`
+    div.innerHTML += mostrarGrafic;
 }
 // Funcio taula de pokemons:
 function printList(array) {
@@ -316,4 +348,38 @@ function searchList() {
 //Butons
 function recarrega() {
     location.reload();
+}
+// Chart
+function mostrarGrafic() {
+    const data = {
+        labels: arrayLables,
+        datasets: [{
+        label: 'Tipus de Pokemon',
+        data: arrayDadesGraf,
+        backgroundColor: [
+            'rgb(102, 209, 173)',
+            'rgb(255, 23, 147)',
+            'rgb(0, 128, 43)',
+            'rgb(84, 46, 99)',
+            'rgb(244, 78, 59)',
+            'rgb(26, 188, 156)',
+            'rgb(172, 57, 219)',
+            'rgb(24, 191, 255)',
+            'rgb(210, 73, 57)',
+            'rgb(91, 192, 235)',
+            'rgb(44, 62, 80)',
+            'rgb(243, 156, 18)',
+            'rgb(189, 195, 199)',
+            'rgb(22, 160, 133)',
+            'rgb(211, 84, 0)'
+        ]
+        }]
+    };
+    const config = {
+        type: 'polarArea',
+        data: data,
+        options: {}
+    };
+    const ctx = document.getElementById('myChart').getContext('2d');
+    chart = new Chart(ctx, config);
 }

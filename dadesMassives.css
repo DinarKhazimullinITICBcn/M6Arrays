@@ -23,3 +23,6 @@ td {
     flex-direction: column;
     margin-left: 10px;
 }
+#mitjana {
+    padding: 0vw 5vw 5vw 5vw; font-size: 2vw; margin: 0 0 0 0;
+}
