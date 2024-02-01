@@ -3,12 +3,15 @@ let array = [];
 let arrayCarregat = [];
 let arrayLables = [];
 let arrayDadesGraf = [];
+let descripcio = '';
 let chart;
 let medida = "";
 let nom = ""
 // POKEMONS
 function guardarInformacio(name) {
     nom = name;
+    arrayLables = [];
+    arrayDadesGraf = [];
     fetch(`js/data/${name}.json`)
     .then((response) => response.json())
     .then((data) => {
@@ -31,6 +34,7 @@ function guardarInformacio(name) {
                 parseFloat(pokemon.weight)
             ]));
             medida = 'kg';
+            descripcio = 'Tipus de pokemon';
         }
         if (name === "municipis") {
             array = Object.values(data.elements).map(municipi => ([
@@ -42,22 +46,25 @@ function guardarInformacio(name) {
             medida = 'habitants'
         }
         if (name === "movies") {
-            array = data.movies.map(movie => {
-                let index = movieGenres.indexOf(movie.genre);
-                if (index === -1) {
-                    movieGenres.push(movie.genre);
-                    movieCounts.push(1);
-                } else {
-                    movieCounts[index]++;
-                }
-                return [
-                    movie.year,
-                    movie.url,
-                    movie.title,
-                    parseFloat(movie.rating)
-                ];
+            data.movies.forEach(movie => {
+                movie.genres.forEach(genres => {
+                    let index = arrayLables.indexOf(genres);
+                    if (index === -1) {
+                        arrayLables.push(genres);
+                        arrayDadesGraf.push(1);
+                    } else {
+                        arrayDadesGraf[index]++;
+                    }
+                });
             });
+            array = data.movies.map(movie => ([
+                movie.year,
+                movie.url,
+                movie.title,
+                parseFloat(movie.rating)
+            ]));
             medida = 'ratings';
+            descripcio = 'Genres de pelicules';
         }
         if (name === "earthMeteorites") {
             array = data.map(meteorite => {
@@ -88,33 +95,22 @@ function carregarButtons(nom) {
         chart = null;
     }
     let div = document.getElementById('buttons');
-
+    let divBuscar = document.getElementById('inputBuscador');
     let inicialitza = `<button onclick="recarrega()">Recarrega</button>`
-    div.innerHTML = inicialitza;
-
     let ordenaAsc = `<button onclick="ordenarAsc(0)">Ordena de manera ascendent</button>`
-    div.innerHTML += ordenaAsc;
-
     let ordenaDesc = `<button onclick="ordenarDesc(0)">Ordena de manera descendent</button>`
-    div.innerHTML += ordenaDesc;
-
+    let calcularMitjana = `<button onclick="calcularMitjana()">Calcula mitjana del ultim bloc afegit</button>`
+    let orderList = `<button onclick="orderList()">Ordena de maner ascendent o descendent</button>`
+    let searchList = `<button onclick="searchList()">Busca la posicio del ${nom}</button>`
+    let mostrarGrafic = `<button onclick="mostrarGrafic()">Mostrar grafic de ${nom}</button>`
+    div.innerHTML = inicialitza + ordenaAsc + ordenaDesc + calcularMitjana + orderList + searchList + mostrarGrafic;
+    
     let buscar = `<input type="text" id="busca" placeholder="Escriu el nom d'un ${nom}">    `
-    div.innerHTML += buscar;
+    divBuscar.innerHTML = buscar;
     setTimeout(function() {
         document.getElementById('busca').addEventListener('input', buscarElement);
     }, 0);
 
-    let calcularMitjana = `<button onclick="calcularMitjana()">Calcula mitjana del ultim bloc afegit</button>`
-    div.innerHTML += calcularMitjana;
-    
-    let orderList = `<button onclick="orderList()">Ordena de maner ascendent o descendent</button>`
-    div.innerHTML += orderList;
-
-    let searchList = `<button onclick="searchList()">Busca la posicio del ${nom}</button>`
-    div.innerHTML += searchList;
-
-    let mostrarGrafic = `<button onclick="mostrarGrafic()">Mostrar grafic de ${nom}</button>`
-    div.innerHTML += mostrarGrafic;
 }
 // Funcio taula de pokemons:
 function printList(array) {
@@ -261,13 +257,13 @@ function printList(array) {
         </tr>
     </thead>`;
     }
-    for (let i = 0; i < array.length; i++){
+    array.forEach(objecte => {
         if (nom !== 'earthMeteorites') {
-            informacio += `<tr><td><p>${array[i][0]}</p></td><td><img src="${array[i][1]}" alt="${array[i][2]}"></td><td><p>${array[i][2]}</p></td><td><p>${array[i][3]}</p></td></tr>`;
+            informacio += `<tr><td><p>${objecte[0]}</p></td><td><img src="${objecte[1]}" alt="${objecte[2]}"></td><td><p>${objecte[2]}</p></td><td><p>${objecte[3]}</p></td></tr>`;
         } else {
-            informacio += `<tr><td><p>${array[i][0]}</p></td><td><p>${array[i][1]}</p></td><td><p>${array[i][2]}</p></td><td><p>${array[i][3]}</p></td></tr>`;
+            informacio += `<tr><td><p>${objecte[0]}</p></td><td><p>${objecte[1]}</p></td><td><p>${objecte[2]}</p></td><td><p>${objecte[3]}</p></td></tr>`;
         }
-    }       
+    });           
     taula.innerHTML = informacio;  
 }
 // Ordenar de manera ascenden
@@ -317,13 +313,12 @@ function calcularMitjana() {
 
 //Ordenar per parametre afegit del usuari:
 function orderList() {
-    let loop = true;
     let parametre = '';
-    while (loop) {
+    while (true) {
         parametre = prompt('Vols ordenar la llista de manera ascendent o descendent?\n1. Asc\n2. Desc\n3. Sortir');
         parametre = parametre.toLowerCase();
         if (parametre === 'asc' || parametre === 'desc' || parametre === 'sortir') {
-            loop = false;
+            break;
         } else {
             alert('Insereix una opcio correcte.')
         }
@@ -354,9 +349,26 @@ function mostrarGrafic() {
     const data = {
         labels: arrayLables,
         datasets: [{
-        label: 'Tipus de Pokemon',
+        label: descripcio,
         data: arrayDadesGraf,
         backgroundColor: [
+            'rgb(102, 209, 173, 0.2)',
+            'rgb(255, 23, 147, 0.2)',
+            'rgb(0, 128, 43, 0.2)',
+            'rgb(84, 46, 99, 0.2)',
+            'rgb(244, 78, 59, 0.2)',
+            'rgb(26, 188, 156, 0.2)',
+            'rgb(172, 57, 219, 0.2)',
+            'rgb(24, 191, 255, 0.2)',
+            'rgb(210, 73, 57, 0.2)',
+            'rgb(91, 192, 235, 0.2)',
+            'rgb(44, 62, 80, 0.2)',
+            'rgb(243, 156, 18, 0.2)',
+            'rgb(189, 195, 199, 0.2)',
+            'rgb(22, 160, 133, 0.2)',
+            'rgb(211, 84, 0, 0.2)'
+        ],
+        borderColor: [
             'rgb(102, 209, 173)',
             'rgb(255, 23, 147)',
             'rgb(0, 128, 43)',
@@ -372,7 +384,8 @@ function mostrarGrafic() {
             'rgb(189, 195, 199)',
             'rgb(22, 160, 133)',
             'rgb(211, 84, 0)'
-        ]
+        ],
+        borderWidth: 1
         }]
     };
     const config = {

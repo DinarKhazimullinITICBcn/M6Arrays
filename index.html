@@ -8,29 +8,36 @@
 	<link rel="shortcut icon" href="#">
 	<link rel="stylesheet" href="dadesMassives.css">
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-	<script src="js/script.js"></script>
 </head>
 <body>
-	<div id="resultat"></div>
-	<h2>Selecciona base de dades</h2>
-	<button id="butoPokemon" onclick="carregarButtons('pokemon');guardarInformacio('pokemon')">Cargar taula Pokemon</button>
-	<button id="butoMunicipis" onclick="carregarButtons('municipis');guardarInformacio('municipis')">Cargar taula Municipis</button>
-	<button id="butoMovies" onclick="carregarButtons('movies');guardarInformacio('movies')">Cargar taula Movies</button>
-	<button id="butoEarthMeteorites" onclick="carregarButtons('earthMeteorites');guardarInformacio('earthMeteorites')">Cargar taula earthMeteorites</button>
-	<div id="buttons"></div>
-	<div style="display: flex;">
+	<div id="header">
+		<h2>Selecciona base de dades</h2>
+		<div id="carregarDades">
+			<button id="butoPokemon" onclick="carregarButtons('pokemon');guardarInformacio('pokemon')">Cargar taula Pokemon</button>
+			<button id="butoMunicipis" onclick="carregarButtons('municipis');guardarInformacio('municipis')">Cargar taula Municipis</button>
+			<button id="butoMovies" onclick="carregarButtons('movies');guardarInformacio('movies')">Cargar taula Movies</button>
+			<button id="butoEarthMeteorites" onclick="carregarButtons('earthMeteorites');guardarInformacio('earthMeteorites')">Cargar taula earthMeteorites</button>
+		</div>
+	</div>
+	<div id="parametres">
+		<div id="buttons">
+		</div>
+		<div id="inputBuscador">
+		</div>
+	</div>
+	<div id="informacio">
+		<div id="mitjana">
+			
+		</div>
 		<div>
 			<table id="taula" style="border-collapse: collapse;" border="1">
 				
 			</table>
 		</div>
-		<div id="mitjana">
-			
-		</div>
-		<div class="chart-container" style="position: relative; width:700px">
+		<div class="chart-container" id="chart">
 			<canvas id="myChart"></canvas>
 		</div>
 	</div>
-	
+	<script src="js/script.js"></script>
 </body>
 </html>
